@@ -4,8 +4,8 @@ defmodule KV.RegistryTest do
   setup context do
     # context.test is used as a shortcut to spawn a registry
     # with the same name of the test currently running.
-    {:ok, registry} = KV.Registry.start_link(context.test)
-    {:ok, registry: registry}
+    {:ok, _} = KV.Registry.start_link(context.test)
+    {:ok, registry: context.test}
   end
 
   test "spawns buckets", %{registry: registry} do
@@ -22,6 +22,10 @@ defmodule KV.RegistryTest do
     KV.Registry.create(registry, "shopping")
     {:ok, bucket} = KV.Registry.lookup(registry, "shopping")
     Agent.stop(bucket)
+
+    # Do a (synchronous) call to ensure the registry processed the DOWN message.
+    # (messages are processed in order)
+    _ = KV.Registry.create(registry, "bogus")
     assert KV.Registry.lookup(registry, "shopping") == :error
   end
 
@@ -36,6 +40,9 @@ defmodule KV.RegistryTest do
     # Wait until the bucket is dead
     assert_receive {:DOWN, ^ref, _, _, _}
 
+    # Do a (synchronous) call to ensure the registry processed the DOWN message.
+    # (messages are processed in order)
+    _ = KV.Registry.create(registry, "bogus")
     assert KV.Registry.lookup(registry, "shopping") == :error
   end
 end
