@@ -15,7 +15,10 @@ defmodule KV.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger]]
+    # The :mod option specifies the “application callback module”,
+    # followed by the arguments to be passed on application start. 
+    [extra_applications: [:logger],
+     mod: {KV, []}]
   end
 
   # Dependencies can be Hex packages:

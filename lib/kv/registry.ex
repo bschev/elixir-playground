@@ -4,12 +4,12 @@ defmodule KV.Registry do
   ## Client API
 
   @doc """
-  Starts the registry.
+  Starts the registry with the given `name`.
   """
-  def start_link do
+  def start_link(name) do
     # Start a new GenServer for the current module (= __MODULE__).
     # The initialization argument :ok matches the argument to init/1.
-    GenServer.start_link(__MODULE__, :ok, [])
+    GenServer.start_link(__MODULE__, :ok, name: name)
   end
 
   @doc """
@@ -60,8 +60,8 @@ defmodule KV.Registry do
     if Map.has_key?(names, name) do
       {:noreply, {names, refs}}
     else
-      # This is a bad idea, as we don’t want the registry to crash when a bucket crashes!
-      {:ok, pid} = KV.Bucket.start_link
+      # Start new bucket.
+      {:ok, pid} = KV.Bucket.Supervisor.start_bucket
       # Monitor each bucket. Process.monitor(pid) returns a unique reference
       # that allows us to match upcoming messages to that monitoring reference.
       ref = Process.monitor(pid)
