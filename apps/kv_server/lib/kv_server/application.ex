@@ -6,18 +6,18 @@ defmodule KVServer.Application do
   use Application
 
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
+    import Supervisor.Spec
 
-    # Define workers and child supervisors to be supervised
+    # Start a Task.Supervisor process with name KVServer.TaskSupervisor.
+    # Run KVServer.accept(4040) as a worker.
     children = [
-      # Starts a worker by calling: KVServer.Worker.start_link(arg1, arg2, arg3)
-      # worker(KVServer.Worker, [arg1, arg2, arg3]),
+      supervisor(Task.Supervisor, [[name: KVServer.TaskSupervisor]]),
+      worker(Task, [KVServer, :accept, [4040]])
     ]
 
     # Define inline supervisor.
-    # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: KVServer.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
 end
