@@ -1,8 +1,52 @@
 defmodule KVServerTest do
   use ExUnit.Case
-  doctest KVServer
 
-  test "the truth" do
-    assert 1 + 1 == 2
-  end
+  # Avoid printing log messages during tests. In case of test fails, the
+  # captured logs will be printed alongside the ExUnit report.
+  @moduletag :capture_log
+
+  # Integration test.
+  setup do
+    # In order to guarantee our test is always in a clean state, we stop and
+    # start the :kv application before each test.
+     Application.stop(:kv)
+     :ok = Application.start(:kv)
+   end
+
+   setup do
+     opts = [:binary, packet: :line, active: false]
+     {:ok, socket} = :gen_tcp.connect('localhost', 4040, opts)
+     {:ok, socket: socket}
+   end
+
+   test "server interaction", %{socket: socket} do
+     assert send_and_recv(socket, "UNKNOWN shopping\r\n") ==
+            "UNKNOWN COMMAND\r\n"
+
+     assert send_and_recv(socket, "GET shopping eggs\r\n") ==
+            "NOT FOUND\r\n"
+
+     assert send_and_recv(socket, "CREATE shopping\r\n") ==
+            "OK\r\n"
+
+     assert send_and_recv(socket, "PUT shopping eggs 3\r\n") ==
+            "OK\r\n"
+
+     # GET returns two lines
+     assert send_and_recv(socket, "GET shopping eggs\r\n") == "3\r\n"
+     assert send_and_recv(socket, "") == "OK\r\n"
+
+     assert send_and_recv(socket, "DELETE shopping eggs\r\n") ==
+            "OK\r\n"
+
+     # GET returns two lines
+     assert send_and_recv(socket, "GET shopping eggs\r\n") == "\r\n"
+     assert send_and_recv(socket, "") == "OK\r\n"
+   end
+
+   defp send_and_recv(socket, command) do
+     :ok = :gen_tcp.send(socket, command)
+     {:ok, data} = :gen_tcp.recv(socket, 0, 1000)
+     data
+   end
 end
