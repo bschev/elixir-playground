@@ -21,6 +21,9 @@ use Mix.Config
 #     config :logger, level: :info
 #
 
+# Configure the :port.
+config :kv_server, :port, 4040
+
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.
@@ -29,5 +32,4 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-# Configure the :port.
-config :kv_server, :port, 4040
+import_config "#{Mix.env}.exs"
