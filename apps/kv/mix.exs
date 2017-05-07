@@ -18,10 +18,14 @@ defmodule KV.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    # Specify extra applications you'll use from Erlang/Elixir
+    # Specify extra applications you'll use from Erlang/Elixir.
+    # Define the application default environment, with an entry of key :routing_table
+    # and value of an empty list. A empty table is used, as the specific routing
+    # table depends on the testing/deployment structure.
     # The :mod option specifies the “application callback module”,
     # followed by the arguments to be passed on application start.
     [extra_applications: [:logger],
+     env: [routing_table: []],
      mod: {KV, []}]
   end
 

@@ -11,9 +11,11 @@ defmodule KV.Supervisor do
     # The supervisor is going to start the child processes
     # - KV.Registry.start_link(KV.Registry)
     # - KV.Bucket.Supervisor.start_link()
+    # - Task.Supervisor([name: KV.RouterTasks])
     children = [
       worker(KV.Registry, [KV.Registry]),
-      supervisor(KV.Bucket.Supervisor, [])
+      supervisor(KV.Bucket.Supervisor, []),
+      supervisor(Task.Supervisor, [[name: KV.RouterTasks]])
     ]
 
     # The supervision strategy dictates what happens when one of the children crashes.
