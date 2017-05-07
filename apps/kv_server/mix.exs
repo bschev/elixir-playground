@@ -20,6 +20,7 @@ defmodule KVServer.Mixfile do
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
     [extra_applications: [:logger],
+     env: [port: nil],
      mod: {KVServer.Application, []}]
   end
 
@@ -37,7 +38,7 @@ defmodule KVServer.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    # Makes :kv available as a dependency inside :kv_server and automatically 
+    # Makes :kv available as a dependency inside :kv_server and automatically
     # starts the :kv application before the server starts.
     [{:kv, in_umbrella: true}]
   end

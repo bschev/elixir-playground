@@ -8,11 +8,13 @@ defmodule KVServer.Application do
   def start(_type, _args) do
     import Supervisor.Spec
 
+    port = Application.fetch_env!(:kv_server, :port)
+
     # Start a Task.Supervisor process with name KVServer.TaskSupervisor.
-    # Run KVServer.accept(4040) as a worker.
+    # Run KVServer.accept(port) as a worker.
     children = [
       supervisor(Task.Supervisor, [[name: KVServer.TaskSupervisor]]),
-      worker(Task, [KVServer, :accept, [4040]])
+      worker(Task, [KVServer, :accept, [port]])
     ]
 
     # Define inline supervisor.
