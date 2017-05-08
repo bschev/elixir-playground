@@ -1,9 +1,9 @@
 defmodule KV.RouterTest do
   use ExUnit.Case, async: true
 
-  # In order to run this test, we need to have two nodes running.
+  # In order to run this test, we need to have two nodes running (the dev env config is used).
   # apps/kv$ iex --sname bar -S mix
-  # apps/kv$ elixir --sname foo -S mix test
+  # apps/kv$ MIX_ENV=dev elixir --sname foo -S mix test
   @tag :distributed
   test "route requests across nodes" do
     # Invoke Kernel.node/0 and check that it returns the name of the correct node.
